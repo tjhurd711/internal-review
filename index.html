@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Review - Memorial Video AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>QA Photo Review</h1>
+                <div class="order-info">
+                    <span class="order-id">Order: <strong id="orderUid">---</strong></span>
+                    <span class="photo-count"><span id="photoCount">0</span> photos</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <div class="action-bar-left">
+                <button id="saveOrderBtn" class="btn btn-save" onclick="saveOrder()" disabled>
+                    <span class="btn-icon">💾</span>
+                    <span class="btn-text">Save Order</span>
+                </button>
+                <span id="saveStatus" class="save-status"></span>
+            </div>
+            <div class="action-bar-right">
+                <button id="approveBtn" class="btn btn-approve" onclick="approveOrder()">
+                    <span class="btn-icon">✅</span>
+                    <span class="btn-text">Approve & Send</span>
+                </button>
+                <button id="rejectBtn" class="btn btn-reject" onclick="rejectOrder()">
+                    <span class="btn-icon">❌</span>
+                    <span class="btn-text">Reject</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <p><strong>Drag photos</strong> to reorder. Click <strong>Save Order</strong> after making changes. When ready, click <strong>Approve & Send</strong> to notify the customer.</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading photos...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-state" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <h2>Unable to Load Photos</h2>
+            <p id="errorMessage">Please check your link and try again.</p>
+            <p id="errorDetail" class="error-detail"></p>
+        </div>
+
+        <!-- Gallery -->
+        <div class="gallery-container" style="display: none;">
+            <div id="photoGallery" class="photo-gallery"></div>
+        </div>
+
+        <!-- Bottom Action Bar (for long galleries) -->
+        <div id="bottomActions" class="bottom-actions" style="display: none;">
+            <button class="btn btn-save" onclick="saveOrder()">
+                <span class="btn-icon">💾</span>
+                <span class="btn-text">Save Order</span>
+            </button>
+            <button class="btn btn-approve" onclick="approveOrder()">
+                <span class="btn-icon">✅</span>
+                <span class="btn-text">Approve & Send</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div id="rejectModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Reject Order</h2>
+            <p>Please provide a reason for rejection:</p>
+            <textarea id="rejectReason" placeholder="e.g., Photos are too blurry, wrong person identified, etc."></textarea>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeRejectModal()">Cancel</button>
+                <button class="btn btn-reject" onclick="submitRejection()">Reject Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div id="confirmIcon" class="confirm-icon">✅</div>
+            <h2 id="confirmTitle">Success</h2>
+            <p id="confirmMessage"></p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="closeConfirmModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
