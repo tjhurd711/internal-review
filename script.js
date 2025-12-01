@@ -1,14 +1,16 @@
 // Memorial Video AI - Internal QA Review Gallery
 // https://internalreview.memorialvideo.ai/
-// Handles photo review, reordering, and approval/rejection workflow
+// Handles photo review, reordering, and links to existing approve/reject/pause/extend endpoints
 
 // === CONFIGURATION ===
 const S3_BUCKET = 'order-by-age-uploads';
 const S3_BASE_URL = `https://${S3_BUCKET}.s3.amazonaws.com`;
 
-// Lambda endpoints (update these with your actual URLs)
+// Lambda endpoint for saving order (update with your actual URL)
 const SAVE_ORDER_LAMBDA_URL = 'https://YOUR_SAVE_ORDER_LAMBDA.lambda-url.us-east-2.on.aws/';
-const REVIEW_GATE_LAMBDA_URL = 'https://YOUR_REVIEW_GATE_LAMBDA.lambda-url.us-east-2.on.aws/';
+
+// Existing API Gateway base URL for review actions (approve, reject, pause, extend)
+const API_BASE_URL = 'https://w8i78lu05m.execute-api.us-east-2.amazonaws.com/prod';
 
 // === STATE ===
 let photoOrder = [];        // Current order of S3 keys
@@ -284,142 +286,48 @@ async function saveOrder() {
 }
 
 // === APPROVE ORDER ===
+// Uses existing API Gateway endpoint - navigates to the URL
 async function approveOrder() {
     // Check for unsaved changes
     if (hasUnsavedChanges) {
-        const proceed = confirm('You have unsaved changes. Save them before approving?');
-        if (proceed) {
+        const save = confirm('You have unsaved changes. Save them before approving?');
+        if (save) {
             await saveOrder();
+            // Wait a moment for save to complete
+            await new Promise(r => setTimeout(r, 500));
         }
     }
 
-    const approveBtn = document.getElementById('approveBtn');
-    approveBtn.disabled = true;
-    approveBtn.querySelector('.btn-text').textContent = 'Approving...';
+    const confirmed = confirm('Approve this order and send to customer now?');
+    if (!confirmed) return;
 
-    try {
-        const response = await fetch(REVIEW_GATE_LAMBDA_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                uid: uid,
-                review_token: reviewToken,
-                action: 'approve'
-            })
-        });
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.error || `Server error: ${response.status}`);
-        }
-
-        const result = await response.json();
-        console.log('[APPROVE] Success:', result);
-
-        showConfirmation(
-            '✅',
-            'Order Approved!',
-            'The customer has been notified and can now access their photos.'
-        );
-
-        // Disable all action buttons
-        disableAllActions();
-
-    } catch (error) {
-        console.error('[APPROVE ERROR]', error);
-        alert(`Failed to approve: ${error.message}`);
-        
-        approveBtn.disabled = false;
-        approveBtn.querySelector('.btn-text').textContent = 'Approve & Send';
-    }
+    // Navigate to existing approve endpoint
+    window.location.href = `${API_BASE_URL}/approve/${reviewToken}`;
 }
 
 // === REJECT ORDER ===
+// Uses existing API Gateway endpoint - navigates to the URL
 function rejectOrder() {
-    document.getElementById('rejectModal').style.display = 'flex';
-    document.getElementById('rejectReason').focus();
-}
-
-function closeRejectModal() {
-    document.getElementById('rejectModal').style.display = 'none';
-    document.getElementById('rejectReason').value = '';
-}
-
-async function submitRejection() {
-    const reason = document.getElementById('rejectReason').value.trim();
-    
-    if (!reason) {
-        alert('Please provide a reason for rejection.');
-        return;
+    if (hasUnsavedChanges) {
+        const discard = confirm('You have unsaved changes. Discard them and reject?');
+        if (!discard) return;
     }
 
-    closeRejectModal();
+    const confirmed = confirm('Reject this order? The customer will NOT receive their photos.');
+    if (!confirmed) return;
 
-    const rejectBtn = document.getElementById('rejectBtn');
-    rejectBtn.disabled = true;
-    rejectBtn.querySelector('.btn-text').textContent = 'Rejecting...';
-
-    try {
-        const response = await fetch(REVIEW_GATE_LAMBDA_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                uid: uid,
-                review_token: reviewToken,
-                action: 'reject',
-                reason: reason
-            })
-        });
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.error || `Server error: ${response.status}`);
-        }
-
-        const result = await response.json();
-        console.log('[REJECT] Success:', result);
-
-        showConfirmation(
-            '❌',
-            'Order Rejected',
-            'The order has been flagged for manual review. Reason: ' + reason
-        );
-
-        disableAllActions();
-
-    } catch (error) {
-        console.error('[REJECT ERROR]', error);
-        alert(`Failed to reject: ${error.message}`);
-        
-        rejectBtn.disabled = false;
-        rejectBtn.querySelector('.btn-text').textContent = 'Reject';
-    }
+    // Navigate to existing reject endpoint
+    window.location.href = `${API_BASE_URL}/reject/${reviewToken}`;
 }
 
-// === CONFIRMATION MODAL ===
-function showConfirmation(icon, title, message) {
-    document.getElementById('confirmIcon').textContent = icon;
-    document.getElementById('confirmTitle').textContent = title;
-    document.getElementById('confirmMessage').textContent = message;
-    document.getElementById('confirmModal').style.display = 'flex';
+// === PAUSE TIMER ===
+function pauseTimer() {
+    window.location.href = `${API_BASE_URL}/pause/${reviewToken}`;
 }
 
-function closeConfirmModal() {
-    document.getElementById('confirmModal').style.display = 'none';
-}
-
-// === DISABLE ALL ACTIONS ===
-function disableAllActions() {
-    document.getElementById('saveOrderBtn').disabled = true;
-    document.getElementById('approveBtn').disabled = true;
-    document.getElementById('rejectBtn').disabled = true;
-    
-    // Also disable bottom buttons if visible
-    document.querySelectorAll('.bottom-actions .btn').forEach(btn => {
-        btn.disabled = true;
-    });
-
-    hasUnsavedChanges = false;
+// === EXTEND TIMER ===
+function extendTimer(minutes) {
+    window.location.href = `${API_BASE_URL}/extend/${reviewToken}?minutes=${minutes}`;
 }
 
 // === UI HELPERS ===
