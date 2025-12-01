@@ -6,8 +6,8 @@
 const S3_BUCKET = 'order-by-age-uploads';
 const S3_BASE_URL = `https://${S3_BUCKET}.s3.amazonaws.com`;
 
-// Lambda endpoint for saving order (update with your actual URL)
-const SAVE_ORDER_LAMBDA_URL = 'https://YOUR_SAVE_ORDER_LAMBDA.lambda-url.us-east-2.on.aws/';
+// Lambda endpoint for saving order
+const SAVE_ORDER_LAMBDA_URL = 'https://cewpk2fgheclulpkx2fhfywnym0ucucx.lambda-url.us-east-2.on.aws/';
 
 // Existing API Gateway base URL for review actions (approve, reject, pause, extend)
 const API_BASE_URL = 'https://w8i78lu05m.execute-api.us-east-2.amazonaws.com/prod';
