@@ -70,10 +70,15 @@ body {
 }
 
 .action-bar-left,
+.action-bar-center,
 .action-bar-right {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.action-bar-center {
+    gap: 8px;
 }
 
 /* Buttons */
@@ -145,6 +150,16 @@ body {
 
 .btn-primary:hover {
     background: #2980b9;
+}
+
+.btn-timer {
+    background: #6c5ce7;
+    color: white;
+}
+
+.btn-timer:hover:not(:disabled) {
+    background: #5b4cdb;
+    transform: translateY(-1px);
 }
 
 /* Save Status */
