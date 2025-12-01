@@ -29,6 +29,20 @@
                 </button>
                 <span id="saveStatus" class="save-status"></span>
             </div>
+            <div class="action-bar-center">
+                <button class="btn btn-timer" onclick="pauseTimer()">
+                    <span class="btn-icon">⏸️</span>
+                    <span class="btn-text">Pause</span>
+                </button>
+                <button class="btn btn-timer" onclick="extendTimer(5)">
+                    <span class="btn-icon">⏱️</span>
+                    <span class="btn-text">+5 min</span>
+                </button>
+                <button class="btn btn-timer" onclick="extendTimer(15)">
+                    <span class="btn-icon">⏱️</span>
+                    <span class="btn-text">+15 min</span>
+                </button>
+            </div>
             <div class="action-bar-right">
                 <button id="approveBtn" class="btn btn-approve" onclick="approveOrder()">
                     <span class="btn-icon">✅</span>
@@ -75,31 +89,6 @@
                 <span class="btn-icon">✅</span>
                 <span class="btn-text">Approve & Send</span>
             </button>
-        </div>
-    </div>
-
-    <!-- Reject Modal -->
-    <div id="rejectModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Reject Order</h2>
-            <p>Please provide a reason for rejection:</p>
-            <textarea id="rejectReason" placeholder="e.g., Photos are too blurry, wrong person identified, etc."></textarea>
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeRejectModal()">Cancel</button>
-                <button class="btn btn-reject" onclick="submitRejection()">Reject Order</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <div id="confirmModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div id="confirmIcon" class="confirm-icon">✅</div>
-            <h2 id="confirmTitle">Success</h2>
-            <p id="confirmMessage"></p>
-            <div class="modal-actions">
-                <button class="btn btn-primary" onclick="closeConfirmModal()">OK</button>
-            </div>
         </div>
     </div>
 
